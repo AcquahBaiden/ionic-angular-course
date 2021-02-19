@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
+import { PlaceLocation } from '../../location.model';
 
 import { PlacesService } from '../../places.service';
 
@@ -12,8 +13,11 @@ import { PlacesService } from '../../places.service';
 })
 export class NewOfferPage implements OnInit {
   form: FormGroup;
-  constructor(private placeService: PlacesService, private router: Router,
-    private loadingCtrl: LoadingController) {}
+  constructor(
+    private placeService: PlacesService,
+    private router: Router,
+    private loadingCtrl: LoadingController
+  ) {}
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -37,28 +41,36 @@ export class NewOfferPage implements OnInit {
         updateOn: 'blur',
         validators: [Validators.required],
       }),
+      location: new FormControl(null, { validators: [Validators.required] }),
     });
+  }
+
+  onLocationPick(location: PlaceLocation) {
+    this.form.patchValue({ location: location });
   }
 
   onCreateOffer() {
     if (!this.form.valid) {
       return;
     }
-    this.loadingCtrl.create({
-      message: 'Creating place...'
-    }).then(loadingEl => {
-      this.placeService.addPalce(
-        this.form.value.title,
-        this.form.value.description,
-        +this.form.value.price,
-        new Date(this.form.value.dateFrom),
-        new Date(this.form.value.dateTo)
-      ).subscribe(()=> {
-        this.form.reset();
-        this.router.navigate(['/places/tabs/offers']);
+    this.loadingCtrl
+      .create({
+        message: 'Creating place...',
+      })
+      .then((loadingEl) => {
+        this.placeService
+          .addPalce(
+            this.form.value.title,
+            this.form.value.description,
+            +this.form.value.price,
+            new Date(this.form.value.dateFrom),
+            new Date(this.form.value.dateTo),
+            this.form.value.location
+          )
+          .subscribe(() => {
+            this.form.reset();
+            this.router.navigate(['/places/tabs/offers']);
+          });
       });
-    })
-
-
   }
 }
