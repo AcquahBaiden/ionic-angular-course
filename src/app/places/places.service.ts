@@ -124,13 +124,24 @@ export class PlacesService {
     // return { ...this._places.find((p) => p.id === id) }; first
   }
 
+  uploadImage(image: File) {
+    const uploadData = new FormData();
+    uploadData.append('image', image);
+
+    return this.http.post<{ imageUrl: string; imagePath: string }>(
+      '',
+      uploadData
+    );
+  }
+
   addPalce(
     title: string,
     description: string,
     price: number,
     dateFrom: Date,
     dateTo: Date,
-    location: PlaceLocation
+    location: PlaceLocation,
+    imageUrl
   ) {
     console.log('the location', location);
     let generatedId: string;
@@ -138,7 +149,7 @@ export class PlacesService {
       Math.random().toString(),
       title,
       description,
-      'https://images.unsplash.com/photo-1527030280862-64139fba04ca?ixid=MXwxMjA3fDB8MHxzZWFyY2h8M3x8YXBhcnRtZW50fGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+      imageUrl,
       price,
       dateFrom,
       dateTo,
